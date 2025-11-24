@@ -1,15 +1,24 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+
 dotenv.config();
-try {
-  const mongoURI = process.env.MONGODB_URI;
-  console.log(mongoURI);
-  if (!mongoURI) throw new Error("No Mongo DB Connection String present");
-  const client = await mongoose.connect(mongoURI, { dbName: "pulse" });
-  console.log(
-    `Connected to MongoDB @ ${client.connection.host} - ${client.connection.name}`
+
+const mongoURI = process.env.MONGODB_URI;
+
+if (!mongoURI) {
+  throw new Error(
+    "No MongoDB connection string found in environment variables."
   );
-} catch (error) {
-  console.log(error);
-  process.exit(1);
 }
+
+export const connectDB = async () => {
+  try {
+    const client = await mongoose.connect(mongoURI, { dbName: "pulse" });
+    console.log(
+      `Connected to MongoDB @ ${client.connection.host} - ${client.connection.name}`
+    );
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+    process.exit(1);
+  }
+};
