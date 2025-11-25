@@ -1,34 +1,29 @@
-import { Schema, model, Document, Types } from "mongoose";
+// models/userProfile.ts
+import { Schema, model, Document } from "mongoose";
 
 export interface UserProfileDocument extends Document {
-  authId: Types.ObjectId;
+  authId: string;
   username: string;
   email: string;
   title?: string;
   address?: string;
-  role: "participant" | "organizer" | "admin";
+  role: "participant" | "organizer" | "admin" | "ticketchecker";
   avatar?: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 const UserProfileSchema = new Schema<UserProfileDocument>(
   {
-    authId: { type: Schema.Types.ObjectId, ref: "AuthUser", required: true },
-
+    authId: { type: String, required: true, unique: true },
     username: { type: String, required: true },
     email: { type: String, required: true },
-
-    title: { type: String },
-    address: { type: String },
-
+    title: String,
+    address: String,
     role: {
       type: String,
-      enum: ["participant", "organizer", "admin"],
+      enum: ["participant", "organizer", "admin", "ticketchecker"],
       default: "participant",
+      avatar: { type: String }, // store file path
     },
-
-    avatar: { type: String },
   },
   { timestamps: true }
 );

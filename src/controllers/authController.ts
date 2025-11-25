@@ -1,85 +1,157 @@
-import type { RequestHandler } from "express";
-import bcrypt from "bcryptjs";
-import { z } from "zod";
-import { AuthUser } from "#models/authUser.ts";
-import { UserProfile } from "#models/userProfile.ts";
-import { auth } from "#auth/auth.ts";
+// src/controllers/authController.ts
+import { RequestHandler } from "express";
 import { fromNodeHeaders } from "better-auth/node";
+import { auth } from "#auth/auth.ts";
 import { registerSchema, loginSchema } from "#schemas/authSchemas.ts";
+import { UserProfile } from "#models/userProfile.ts";
 
-type RegisterInput = z.infer<typeof registerSchema>;
-type LoginInput = z.infer<typeof loginSchema>;
+/**
+ * Register a new user
+ */
+export const register: RequestHandler = async (req, res) => {
+  const parsed = registerSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({
+      error: "Invalid input",
+      details: parsed.error.format(),
+    });
+  }
 
-export const register: RequestHandler<unknown, RegisterInput[]> = async (
-  req,
-  res
-) => {
+  const { email, password, username, title, address, role } = parsed.data;
+
   try {
-    const parsed = registerSchema.safeParse(req.body);
+    // 1️⃣ Create the user
+    const authUser = await auth.api.signUpEmail({
+      body: { name: username, email, password },
+      headers: fromNodeHeaders(req.headers),
+    });
 
-    if (!parsed.success) return res.status(400).json();
-
-    const { email, password, username, title, address, role } = parsed.data;
-
-    let authUser;
-    try {
-      authUser = await auth.api.signUpEmail({
-        body: { name: username, email, password },
-      });
-    } catch (err: any) {
-      if (err.body?.code === "EMAIL_ALREADY_EXISTS") {
-        return res.status(400).json();
-      }
-      throw err;
-    }
-
+    // 2️⃣ Create user profile
     const profile = await UserProfile.create({
       authId: authUser.user.id,
       username,
       email,
       title,
       address,
-      role,
+      role: role || "participant",
     });
-    res.status(201).json();
-  } catch (err) {
-    console.error(err);
+
+    const result = await auth.api.signInEmail({
+      body: { email, password },
+      headers: fromNodeHeaders(req.headers),
+    });
+
+    console.log("Login result:", result); // check what's returned
+
+    if (!result?.user) {
+      // If user is null, login did not succeed
+      return res.status(401).json({ error: "Login failed" });
+    }
+
+    // Fetch session to confirm cookie/session is set
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
+
+    console.log("Session after login:", session);
+
+    return res.status(201).json({
+      message: "Registration and login successful",
+      user: session?.user,
+      session: session?.session,
+      profile,
+    });
+  } catch (err: any) {
+    console.error("Register error:", err);
+
+    if (err.body?.code === "EMAIL_ALREADY_EXISTS") {
+      return res.status(409).json({ error: "Email already exists" });
+    }
+
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
+/**
+ * Login user
+ */
+export const login: RequestHandler = async (req, res) => {
+  const parsed = loginSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({
+      error: "Invalid input",
+      details: parsed.error.format(),
+    });
+  }
 
-export const login: RequestHandler<unknown, LoginInput[]> = async (
-  req,
-  res
-) => {
+  const { email, password } = parsed.data;
+
   try {
-    const parsed = loginSchema.safeParse(req.body);
-    if (!parsed.success) return res.status(400).json();
+    // Sign in user
+    await auth.api.signInEmail({
+      body: { email, password },
+      headers: fromNodeHeaders(req.headers),
+    });
 
-    const { email, password } = parsed.data;
+    // Fetch session after login
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
 
-    const session = await auth.api.signInEmail({ body: { email, password } });
-    res.json();
-  } catch (err) {
-    console.error(err);
+    if (!session?.user) {
+      return res.status(401).json({ error: "Login failed: session not found" });
+    }
+
+    console.log("User logged in:", session.user);
+
+    return res.status(200).json({
+      message: "Login successful",
+      user: session.user,
+      session: session.session,
+    });
+  } catch (err: any) {
+    console.error("Login error:", err);
+
+    return res.status(401).json({
+      error: "Invalid email or password",
+      details: err?.body ?? null,
+    });
   }
 };
 
+/**
+ * Logout user
+ */
 export const logout: RequestHandler = async (req, res) => {
   try {
     await auth.api.signOut({ headers: fromNodeHeaders(req.headers) });
-    res.json({ message: "Logged out successfully" });
+
+    return res.status(200).json({ message: "Logged out successfully" });
   } catch (err) {
-    console.error(err);
+    console.error("Logout error:", err);
+    return res.status(500).json({ error: "Failed to logout" });
   }
 };
 
-export const getSession: RequestHandler<unknown, any> = async (req, res) => {
+/**
+ * Get current session
+ */
+export const getSession: RequestHandler = async (req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+
   try {
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
     });
-    res.json(session || { user: null });
+
+    return res.status(200).json({
+      message: session?.user ? "Session fetched" : "No active session",
+      user: session?.user ?? null,
+      session: session?.session ?? null,
+    });
   } catch (err) {
-    console.error(err);
+    console.error("Get session error:", err);
+    return res.status(500).json({ error: "Failed to fetch session" });
   }
 };

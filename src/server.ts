@@ -10,7 +10,7 @@ import profileRoutes from "#routes/profileRoutes.ts";
 import errorHandler from "#middlewares/errorHandler.ts";
 import notFoundHandler from "#middlewares/notFoundHandler.ts";
 
-import { toNodeHandler } from "better-auth/node";
+import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import { auth } from "#auth/auth.ts";
 
 const app = express();
@@ -24,12 +24,35 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
-app.use("/uploads", express.static("uploads"));
-
 app.use("/api/auth/native", toNodeHandler(auth));
 
-app.use("/api/auth", authRoutes);
+app.use(express.json());
+//app.use("/uploads", express.static("uploads"));
+//app.use("/api/auth/native", toNodeHandler(auth));
+
+//app.use("/api/auth", authRoutes);
+app.get("/api/me", async (req, res) => {
+  try {
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
+
+    if (!session) {
+      return res.status(401).json({ user: null });
+    }
+
+    return res.json({
+      user: session.user,
+      session: {
+        id: session.session.id,
+        expiresAt: session.session.expiresAt,
+      },
+    });
+  } catch (err) {
+    console.error("Error in /api/me", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
 app.use("/api/profile", profileRoutes);
 
 app.use("*splat", notFoundHandler);

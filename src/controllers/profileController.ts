@@ -1,53 +1,63 @@
+// controllers/profileController.ts
 import type { RequestHandler } from "express";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { AuthUser } from "#models/authUser.ts";
 import { UserProfile } from "#models/userProfile.ts";
 import { updateProfileSchema } from "#schemas/userSchemas.ts";
+import { auth } from "#auth/auth.ts";
+import { fromNodeHeaders } from "better-auth/node";
+
 type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 
-export const getProfile: RequestHandler<unknown, any> = async (
-  req,
-  res,
-  next
-) => {
+export const getProfile: RequestHandler = async (req, res) => {
   try {
-    const authUser = (req as any).user;
-    if (!authUser) return res.status(401).json({ error: "Unauthorized" });
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
 
-    const profile = await UserProfile.findOne({ authId: authUser._id }).lean();
+    if (!session) return res.status(401).json({ error: "Unauthorized" });
+
+    const authId = session.user.id;
+
+    const profile = await UserProfile.findOne({ authId }).lean();
     if (!profile) return res.status(404).json({ error: "Profile not found" });
 
     res.json(profile);
   } catch (err) {
-    next(err);
+    console.error("GET /profile error:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-export const updateProfile: RequestHandler<
-  unknown,
-  { message: string; profile: any },
-  UpdateProfileInput
-> = async (req, res, next) => {
+export const updateProfile: RequestHandler = async (req, res) => {
   try {
-    const authUser = (req as any).user;
-    if (!authUser) return res.status(401).json();
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
+
+    if (!session) return res.status(401).json({ error: "Unauthorized" });
+
+    const authId = session.user.id;
 
     const parsed = updateProfileSchema.safeParse(req.body);
-    if (!parsed.success) return res.status(400).json();
+    if (!parsed.success) return res.status(400).json({ error: parsed.error });
 
-    const { fullName, email, password } = parsed.data;
+    const { username, email, password, avatar } = parsed.data;
 
-    const profile = await UserProfile.findOne({ authId: authUser._id });
-    const authRecord = await AuthUser.findById(authUser._id);
+    const profile = await UserProfile.findOne({ authId });
+    const authRecord = await AuthUser.findById(authId);
 
-    if (!profile || !authRecord) return res.status(404).json();
+    if (!profile || !authRecord)
+      return res.status(404).json({ error: "User not found" });
 
-    if (fullName) profile.username = fullName;
+    if (username) profile.username = username;
+
     if (email) {
       profile.email = email;
       authRecord.email = email;
     }
+
     if (password) authRecord.passwordHash = await bcrypt.hash(password, 10);
 
     await profile.save();
@@ -55,6 +65,7 @@ export const updateProfile: RequestHandler<
 
     res.json({ message: "Profile updated", profile });
   } catch (err) {
-    next(err);
+    console.error("PUT /profile error:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };
