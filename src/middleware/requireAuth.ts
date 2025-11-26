@@ -4,7 +4,7 @@ export const requireAuth = (
   res: Response,
   next: NextFunction
 ) => {
-  // TODO:
+
 
   return res
     .status(401)

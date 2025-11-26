@@ -5,7 +5,7 @@ export const loginUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  // TODO:
+  
   res.json({ message: "loginUser: TO BE IMPLEMENTED" });
 };
 
