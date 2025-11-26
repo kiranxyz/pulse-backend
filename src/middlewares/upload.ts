@@ -1,14 +1,20 @@
-// middlewares/upload.ts
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 
-const storage = multer.diskStorage({
-  destination: function (_req, _file, cb) {
-    cb(null, "uploads/"); // folder to store avatars
+const uploadDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+export const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
   },
-  filename: function (_req, file, cb) {
+  filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-    cb(null, Date.now() + ext);
+    const filename = `${Date.now()}${ext}`;
+    cb(null, filename);
   },
 });
 

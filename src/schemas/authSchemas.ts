@@ -12,9 +12,9 @@ export const registerSchema = z.strictObject({
       message: "Password must contain a special character",
     }),
   username: z.string().min(1, { message: "Full name is required" }),
-  title: z.string().min(1, { message: "Title is required" }),
-  address: z.string().min(1, { message: "Address is required" }),
-  role: z.string().min(1, { message: "Role is required" }),
+  title: z.string().min(1, { message: "Title is required" }).optional(),
+  address: z.string().min(1, { message: "Address is required" }).optional(),
+  role: z.string().min(1, { message: "Role is required" }).optional(),
 });
 
 export const loginSchema = z.strictObject({

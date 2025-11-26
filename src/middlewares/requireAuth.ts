@@ -26,7 +26,6 @@ export async function requireAuth(
 
     next();
   } catch (err) {
-    console.error("Error in requireAuth middleware", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 }

@@ -1,21 +1,20 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 dotenv.config();
-
 import { connectDB } from "#db/db.ts";
-import authRoutes from "#routes/authRoute.ts";
-import userRoutes from "#routes/profileRoutes.ts";
 import profileRoutes from "#routes/profileRoutes.ts";
 import errorHandler from "#middlewares/errorHandler.ts";
 import notFoundHandler from "#middlewares/notFoundHandler.ts";
-
 import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import { auth } from "#auth/auth.ts";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 connectDB();
 
 app.use(
@@ -27,10 +26,7 @@ app.use(
 app.use("/api/auth/native", toNodeHandler(auth));
 
 app.use(express.json());
-//app.use("/uploads", express.static("uploads"));
-//app.use("/api/auth/native", toNodeHandler(auth));
 
-//app.use("/api/auth", authRoutes);
 app.get("/api/me", async (req, res) => {
   try {
     const session = await auth.api.getSession({
@@ -53,6 +49,8 @@ app.get("/api/me", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
 app.use("/api/profile", profileRoutes);
 
 app.use("*splat", notFoundHandler);

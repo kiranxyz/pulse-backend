@@ -6,7 +6,6 @@ const validateBodyZod =
   (zodSchema: ZodObject): RequestHandler =>
   (req, res, next) => {
     const { data, error, success } = zodSchema.safeParse(req.body);
-    console.log("Validating request body with Zod schema");
     if (!success) {
       next(
         new Error(z.prettifyError(error), {

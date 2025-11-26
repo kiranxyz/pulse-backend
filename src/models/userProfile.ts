@@ -1,4 +1,3 @@
-// models/userProfile.ts
 import { Schema, model, Document } from "mongoose";
 
 export interface UserProfileDocument extends Document {
@@ -22,7 +21,7 @@ const UserProfileSchema = new Schema<UserProfileDocument>(
       type: String,
       enum: ["participant", "organizer", "admin", "ticketchecker"],
       default: "participant",
-      avatar: { type: String }, // store file path
+      avatar: { type: String },
     },
   },
   { timestamps: true }
