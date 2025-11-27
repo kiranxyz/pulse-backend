@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
-import { fileURLToPath } from "url";
 dotenv.config();
 import { connectDB } from "#db/db.ts";
 import profileRoutes from "#routes/profileRoutes.ts";
@@ -13,8 +12,7 @@ import { auth } from "#auth/auth.ts";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.resolve();
 connectDB();
 
 app.use(
@@ -49,7 +47,7 @@ app.get("/api/me", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "../src/uploads")));
 
 app.use("/api/profile", profileRoutes);
 
