@@ -1,6 +1,8 @@
 import { Router } from "express";
-import { loginUser, getLoggedUser } from "../controllers/authController.ts";
-const router = Router();
-router.get("/me", getLoggedUser);
-router.post("/login", loginUser);
-export default router;
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "#auth/auth.ts";
+
+const authRouter = Router();
+
+authRouter.use("/native", toNodeHandler(auth));
+export default authRouter;
