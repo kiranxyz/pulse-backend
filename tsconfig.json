@@ -1,18 +1,26 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["ES2022", "DOM"],
+    "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "strict": true,
+    "rootDir": "src",
+    "outDir": "dist",
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
+    "strict": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
+    "baseUrl": "./src",
     "paths": {
-      "#db": ["./src/db/db.ts"]
+      "#models/*": ["models/*"],
+      "#controllers/*": ["controllers/*"],
+      "#routes/*": ["routes/*"],
+      "#middlewares/*": ["middlewares/*"],
+      "#schemas/*": ["schemas/*"],
+      "#db/*": ["db/*"],
+      "#auth/*": ["auth/*"]
     }
   },
-
   "include": ["src/**/*"]
 }
