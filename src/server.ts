@@ -36,7 +36,6 @@ app.get("/api/me", async (req, res) => {
       headers: fromNodeHeaders(req.headers),
     });
 
-app.use("/api", eventRouter);
 
 app.listen(PORT, () => console.log("Server running"));
     if (!session) {
@@ -58,6 +57,8 @@ app.listen(PORT, () => console.log("Server running"));
 app.use("/uploads", express.static(path.join(__dirname, "../src/uploads")));
 
 app.use("/api/profile", profileRoutes);
+app.use("/api/events", eventRouter);
+
 
 app.use("*splat", notFoundHandler);
 app.use(errorHandler);
