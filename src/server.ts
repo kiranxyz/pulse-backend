@@ -1,6 +1,11 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import authRouter from "./routes/authRoute.ts";
+import eventRouter from "./routes/eventRoute.ts";  
+import mongoose from "mongoose";
+import "#db";
+
 import path from "path";
 dotenv.config();
 import { connectDB } from "#db/db.ts";
@@ -31,6 +36,9 @@ app.get("/api/me", async (req, res) => {
       headers: fromNodeHeaders(req.headers),
     });
 
+app.use("/api", eventRouter);
+
+app.listen(PORT, () => console.log("Server running"));
     if (!session) {
       return res.status(401).json({ user: null });
     }
