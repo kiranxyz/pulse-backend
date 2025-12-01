@@ -26,9 +26,10 @@ const eventSchema = new mongoose.Schema({
     percent: { type: Number, default: 0 },
   },
   description: String,
-  image: String,    
-  price: Number,    
+  image: String,
+  price: Number,
 });
 
-
-export default mongoose.model<IEvent>("Event", eventSchema);
+export const Event =
+  (mongoose.models.Event as mongoose.Model<IEvent>) ||
+  mongoose.model<IEvent>("Event", eventSchema);

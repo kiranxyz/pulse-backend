@@ -1,13 +1,15 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+dotenv.config();
 import authRouter from "./routes/authRoute.ts";
-import eventRouter from "./routes/eventRoute.ts";  
+import eventRouter from "./routes/eventRoute.ts";
+import stripeRouter from "./routes/stripeRouter.ts";
+import registerParticipantRoute from "./routes/registerParticipantRoute.ts";
 import mongoose from "mongoose";
 import "#db";
 
 import path from "path";
-dotenv.config();
 import { connectDB } from "#db/db.ts";
 import profileRoutes from "#routes/profileRoutes.ts";
 import errorHandler from "#middlewares/errorHandler.ts";
@@ -36,8 +38,7 @@ app.get("/api/me", async (req, res) => {
       headers: fromNodeHeaders(req.headers),
     });
 
-
-app.listen(PORT, () => console.log("Server running"));
+    app.listen(PORT, () => console.log("Server running"));
     if (!session) {
       return res.status(401).json({ user: null });
     }
@@ -58,7 +59,8 @@ app.use("/uploads", express.static(path.join(__dirname, "../src/uploads")));
 
 app.use("/api/profile", profileRoutes);
 app.use("/api/events", eventRouter);
-
+app.use("/api/stripe", stripeRouter);
+app.use("/api/registerParticipant", registerParticipantRoute);
 
 app.use("*splat", notFoundHandler);
 app.use(errorHandler);
