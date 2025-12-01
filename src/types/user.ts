@@ -1,4 +1,4 @@
-export type UserRole = "attendee" | "organizer" | "admin";
+export type UserRole = "attendee" | "organizer" | "admin" | "ticketchecker";
 
 export interface UserDTO {
   id: string;
