@@ -1,4 +1,5 @@
 import Event from "../models/event";
+import { AuthUser } from "#models/authUser.ts";
 
 // GET all events
 export const getEvents = async (req, res) => {
@@ -24,7 +25,9 @@ export const createEvent = async (req, res) => {
 // UPDATE event
 export const updateEvent = async (req, res) => {
   try {
-    const updated = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updated = await Event.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     res.json(updated);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -50,4 +53,3 @@ export const getEventById = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-

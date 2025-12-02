@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRouter from "./routes/authRoute.ts";
-import eventRouter from "./routes/eventRoute.ts";  
+import eventRouter from "./routes/eventRoute.ts";
 import mongoose from "mongoose";
 import "#db";
 
@@ -10,6 +10,7 @@ import path from "path";
 dotenv.config();
 import { connectDB } from "#db/db.ts";
 import profileRoutes from "#routes/profileRoutes.ts";
+import checkInRoutes from "#routes/checkInRoutes.ts";
 import errorHandler from "#middlewares/errorHandler.ts";
 import notFoundHandler from "#middlewares/notFoundHandler.ts";
 import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
@@ -36,8 +37,7 @@ app.get("/api/me", async (req, res) => {
       headers: fromNodeHeaders(req.headers),
     });
 
-
-app.listen(PORT, () => console.log("Server running"));
+    app.listen(PORT, () => console.log("Server running"));
     if (!session) {
       return res.status(401).json({ user: null });
     }
@@ -59,6 +59,7 @@ app.use("/uploads", express.static(path.join(__dirname, "../src/uploads")));
 app.use("/api/profile", profileRoutes);
 app.use("/api/events", eventRouter);
 
+app.use("/api/checkin", checkInRoutes);
 
 app.use("*splat", notFoundHandler);
 app.use(errorHandler);

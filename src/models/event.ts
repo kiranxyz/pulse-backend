@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { boolean } from "zod";
 
 export interface IEvent extends Document {
   title: string;
@@ -12,6 +13,10 @@ export interface IEvent extends Document {
     percent: number;
   };
   description?: string;
+  name: string;
+  organizer: mongoose.Types.ObjectId;
+  capacity: number;
+  attendees: mongoose.Types.ObjectId[];
 }
 
 const eventSchema = new mongoose.Schema({
@@ -26,9 +31,13 @@ const eventSchema = new mongoose.Schema({
     percent: { type: Number, default: 0 },
   },
   description: String,
-  image: String,    
-  price: Number,    
+  image: String,
+  price: Number,
+  name: { type: String, required: true },
+  organizer: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  capacity: { type: Number, required: true },
+  attendees: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  timestamps: boolean,
 });
-
 
 export default mongoose.model<IEvent>("Event", eventSchema);
