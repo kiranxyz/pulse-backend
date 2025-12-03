@@ -2,7 +2,7 @@ import { EventRegistration } from "#models/EventRegistration.ts";
 import { Ticket } from "#models/Ticket.ts";
 //import { AuthUser } from "#models/AuthUser.ts";
 import { Event } from "#models/Event.ts";
-import { generateTicketPDF } from "../util/GeneratePdfTicket.ts";
+import { generateTicketPDF } from "../utils/GeneratePdfTicket.ts";
 import crypto from "crypto";
 import { RequestHandler } from "express";
 import { UserProfile } from "../models/userProfile.ts";
@@ -27,9 +27,10 @@ const registerParticipant: RequestHandler = async (req, res) => {
     });
 
     // generate unique ticket code
-    const ticketCode = crypto.randomUUID();
+    //const ticketCode = crypto.randomUUID();
+    const ticketCode = Math.floor(10000 + Math.random() * 90000).toString();
 
-    const user = await UserProfile.findById(userId);
+    const user = await UserProfile.findOne({ authId: userId });
     const event = await Event.findById(eventId);
 
     // create ticket
@@ -46,14 +47,12 @@ const registerParticipant: RequestHandler = async (req, res) => {
           ticketCode: ticket.ticketCode,
           eventTitle: event.title,
           userName: user.username,
-          savePath: `src/pdfTickets/ticket_${ticket._id}.pdf`,
+          savePath: `src/pdfTickets/ticket_${ticket.ticketCode}.pdf`,
         });
 
         res.json({
           msg: "Participant registered successfully",
           ticket,
-          user,
-          event,
         });
       } catch (error) {}
     } else {

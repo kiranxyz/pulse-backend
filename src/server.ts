@@ -6,6 +6,7 @@ import authRouter from "./routes/authRoute.ts";
 import eventRouter from "./routes/eventRoute.ts";
 import stripeRouter from "./routes/stripeRouter.ts";
 import registerParticipantRoute from "./routes/registerParticipantRoute.ts";
+import ticketRoute from "./routes/ticketRoute.ts";
 import mongoose from "mongoose";
 import "#db";
 
@@ -61,6 +62,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/events", eventRouter);
 app.use("/api/stripe", stripeRouter);
 app.use("/api/registerParticipant", registerParticipantRoute);
+app.use("/api/ticket", ticketRoute);
 
 app.use("*splat", notFoundHandler);
 app.use(errorHandler);
