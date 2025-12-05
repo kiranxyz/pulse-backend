@@ -14,7 +14,10 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+<<<<<<< HEAD
     "axios": "^1.13.2",
+=======
+>>>>>>> main
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.4.1",
     "colors": "^1.4.0",
@@ -24,9 +27,12 @@
     "mongodb": "^7.0.0",
     "mongoose": "^8.20.1",
     "multer": "^2.0.2",
+<<<<<<< HEAD
     "nodemailer": "^7.0.11",
     "pdfkit": "^0.17.2",
     "qrcode": "^1.5.4",
+=======
+>>>>>>> main
     "zod": "^4.1.13"
   },
   "devDependencies": {
