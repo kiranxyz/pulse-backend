@@ -14,6 +14,8 @@ import checkInRoutes from "#routes/checkInRoutes.ts";
 import errorHandler from "#middlewares/errorHandler.ts";
 import notFoundHandler from "#middlewares/notFoundHandler.ts";
 import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
+import adminStatsRouter from "#routes/adminStats.ts";
+
 import { auth } from "#auth/auth.ts";
 
 const app = express();
@@ -60,7 +62,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/events", eventRouter);
 
 app.use("/api/checkin", checkInRoutes);
-
+app.use("/admin", adminStatsRouter);
 app.use("*splat", notFoundHandler);
 app.use(errorHandler);
 

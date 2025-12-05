@@ -17,6 +17,10 @@ export interface IEvent extends Document {
   organizer: mongoose.Types.ObjectId;
   capacity: number;
   attendees: mongoose.Types.ObjectId[];
+  location: string;
+  ticketsSold: number;
+  ticketAvailable: Number;
+  seatLeft: Number;
 }
 
 const eventSchema = new mongoose.Schema({
@@ -37,7 +41,17 @@ const eventSchema = new mongoose.Schema({
   organizer: { type: Schema.Types.ObjectId, ref: "User", required: true },
   capacity: { type: Number, required: true },
   attendees: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  location: { type: String, required: true },
+  ticketsSold: { type: Number, default: 0 },
+  ticketSold: Number,
+  ticketAvailable: Number,
   timestamps: boolean,
+  options: {
+    discountFirst10: Boolean,
+    showHurryUp: Boolean,
+    reminder: Boolean,
+    emailNotify: Boolean,
+  },
 });
 
 export default mongoose.model<IEvent>("Event", eventSchema);

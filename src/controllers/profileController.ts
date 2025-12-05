@@ -8,6 +8,7 @@ import fs from "fs";
 import path from "path";
 import { updateProfileSchema } from "#schemas/userSchemas.ts";
 import { console } from "inspector";
+import { UserRole, normalizeRole } from "../types/user.ts";
 
 export const getProfile: RequestHandler = async (req, res) => {
   try {
@@ -131,6 +132,7 @@ export const deleteProfile: RequestHandler = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
+
 export const syncProfile: RequestHandler = async (req, res) => {
   try {
     const session = await auth.api.getSession({
@@ -140,13 +142,15 @@ export const syncProfile: RequestHandler = async (req, res) => {
 
     const authId = session.user.id;
 
+    const roleFromBody: UserRole = normalizeRole(req.body?.role);
+
     let authRecord = await AuthUser.findById(authId);
     if (!authRecord) {
       authRecord = await AuthUser.create({
         _id: authId,
         authId,
         email: session.user.email,
-        role: "participant",
+        role: roleFromBody,
       });
     }
 
@@ -156,7 +160,7 @@ export const syncProfile: RequestHandler = async (req, res) => {
         authId,
         username: session.user.name || session.user.email.split("@")[0],
         email: session.user.email,
-        role: "participant",
+        role: roleFromBody,
       });
     }
 
