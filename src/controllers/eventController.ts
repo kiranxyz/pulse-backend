@@ -1,58 +1,56 @@
-import { Event } from "../models/Event.ts";
+import { Event } from "../models/event";
 
 // GET all events
-export const getEvents = async (req, res) => {
+export const getEvents = async (req: any, res: any) => {
   try {
     const events = await Event.find();
     res.json(events);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  } catch (err: any) {
+    res.json({ status: 500, message: err.message });
   }
 };
 
 // CREATE new event
-export const createEvent = async (req, res) => {
+export const createEvent = async (req: any, res: any) => {
   try {
     const event = new Event(req.body);
-    console.log(
-      "Coordinate in req body:",
-      req.body.latitude,
-      req.body.longitude
-    );
+    console.log("Coordinates:", req.body.latitude, req.body.longitude);
     const savedEvent = await event.save();
-    res.status(201).json(savedEvent);
+    res.json({ status: 201, data: savedEvent });
   } catch (err: any) {
-    res.status(400).json({ message: err.message });
+    res.json({ status: 400, message: err.message });
   }
 };
 
 // UPDATE event
-export const updateEvent = async (req, res) => {
+export const updateEvent = async (req: any, res: any) => {
   try {
     const updated = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updated);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    if (!updated) return res.json({ status: 404, message: "Event not found" });
+    res.json({ status: 200, data: updated });
+  } catch (err: any) {
+    res.json({ status: 400, message: err.message });
   }
 };
 
 // DELETE event
-export const deleteEvent = async (req, res) => {
+export const deleteEvent = async (req: any, res: any) => {
   try {
-    await Event.findByIdAndDelete(req.params.id);
-    res.json({ message: "Event deleted" });
+    const deleted = await Event.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.json({ status: 404, message: "Event not found" });
+    res.json({ status: 200, message: "Event deleted" });
   } catch (err: any) {
-    res.status(400).json({ message: err.message });
+    res.json({ status: 400, message: err.message });
   }
 };
 
-export const getEventById = async (req, res) => {
+// GET event by ID
+export const getEventById = async (req: any, res: any) => {
   try {
     const event = await Event.findById(req.params.id);
-    if (!event) return res.status(404).json({ message: "Event not found" });
-    res.json(event);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    if (!event) return res.json({ status: 404, message: "Event not found" });
+    res.json({ status: 200, data: event });
+  } catch (err: any) {
+    res.json({ status: 500, message: err.message });
   }
 };
-
