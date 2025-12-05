@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+dotenv.config();
 import authRouter from "./routes/authRoute.ts";
 import eventRouter from "./routes/eventRoute.ts";  
 import mongoose from "mongoose";
