@@ -65,7 +65,12 @@ router.post("/email", async (req, res) => {
     //   html: `<p>Thank you for registering! Please find your ticket attached.</p>`,
     //   attachmentPath: ticketPath,
     // });
+<<<<<<< HEAD
     res.status(200).send({ message: "Ticket email sent successfully" });
+=======
+    console.log(`Email sent to ${user.email} with ticket ${ticketCode}`);
+    res.status(200).send({ message: "Ticket sent via email successfully" });
+>>>>>>> 4d5c847ed5a467bd03f4e630afdd48e7d347d76c
   } catch (error: any) {
     res.status(500).send({ error: error.message });
   }
