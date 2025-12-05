@@ -12,6 +12,7 @@ import notificationRoute from "./routes/notificationRoute.ts";
 import "#db";
 
 import path from "path";
+dotenv.config();
 import { connectDB } from "#db/db.ts";
 import profileRoutes from "#routes/profileRoutes.ts";
 import errorHandler from "#middlewares/errorHandler.ts";
@@ -41,7 +42,8 @@ app.get("/api/me", async (req, res) => {
       headers: fromNodeHeaders(req.headers),
     });
 
-    app.listen(PORT, () => console.log("Server running"));
+
+app.listen(PORT, () => console.log("Server running"));
     if (!session) {
       return res.status(401).json({ user: null });
     }
