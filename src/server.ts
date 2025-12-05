@@ -7,7 +7,8 @@ import eventRouter from "./routes/eventRoute.ts";
 import stripeRouter from "./routes/stripeRouter.ts";
 import registerParticipantRoute from "./routes/registerParticipantRoute.ts";
 import ticketRoute from "./routes/ticketRoute.ts";
-import mongoose from "mongoose";
+import categoriesRoute from "./routes/categoriesRoute.ts";
+import notificationRoute from "./routes/notificationRoute.ts";
 import "#db";
 
 import path from "path";
@@ -27,6 +28,7 @@ app.use(
   cors({
     origin: process.env.FRONTEND_ORIGIN,
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   })
 );
 app.use("/api/auth/native", toNodeHandler(auth));
@@ -63,6 +65,8 @@ app.use("/api/events", eventRouter);
 app.use("/api/stripe", stripeRouter);
 app.use("/api/registerParticipant", registerParticipantRoute);
 app.use("/api/ticket", ticketRoute);
+app.use("/api/categories", categoriesRoute);
+app.use("/api/notifications", notificationRoute);
 
 app.use("*splat", notFoundHandler);
 app.use(errorHandler);
