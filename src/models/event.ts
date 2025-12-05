@@ -12,23 +12,46 @@ export interface IEvent extends Document {
     percent: number;
   };
   description?: string;
+  image?: string;
+  price?: number;
+  latitude?: string;
+  longitude?: string;
+  organizerId?: string;
 }
 
-const eventSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  address: String,
-  date: Date,
-  time: String,
-  totalSeats: { type: Number, required: true },
-  seatsBooked: { type: Number, default: 0 },
-  discount: {
-    firstN: { type: Number, default: 0 },
-    percent: { type: Number, default: 0 },
+const eventSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    address: String,
+    date: Date,
+    time: String,
+    totalSeats: { type: Number, required: true },
+    seatsBooked: { type: Number, default: 0 },
+    discount: {
+      firstN: { type: Number, default: 0 },
+      percent: { type: Number, default: 0 },
+    },
+    description: String,
+    image: String,
+    price: Number,
+    latitude: String,
+    longitude: String,
+    categories: [
+      {
+        type: String,
+        required: true,
+        trim: true,
+      },
+    ],
+    organizerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "AuthUser",
+      required: true,
+    },
   },
-  description: String,
-  image: String,    
-  price: Number,    
-});
+  { timestamps: true }
+);
 
-
-export default mongoose.model<IEvent>("Event", eventSchema);
+export const Event = mongoose.model("Event", eventSchema);
+// (mongoose.models.Event as mongoose.Model<IEvent>) ||
+// mongoose.model<IEvent>("Event", eventSchema);

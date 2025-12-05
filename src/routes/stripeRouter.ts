@@ -23,11 +23,5 @@ router.post("/create-payment-intent", async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
-// router.post("/", createEvent);
-// router.put("/:id", updateEvent);
-// router.delete("/:id", deleteEvent);
-
-// // Event details
-// router.get("/events/:id", getEventById);
 
 export default router;
