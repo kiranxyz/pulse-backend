@@ -21,7 +21,11 @@ export const getProfile: RequestHandler = async (req, res) => {
     const profile = await UserProfile.findOne({ authId }).lean();
     if (!profile) return res.status(404).json({ error: "Profile not found" });
 
-    res.json(profile);
+    const avatarUrl = profile.avatar
+      ? `${process.env.VITE_PULSE_BACKEND_API_URL}/uploads/${profile.avatar}`
+      : null;
+
+    res.json({ ...profile, avatar: avatarUrl });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
@@ -36,9 +40,8 @@ export const updateProfile: RequestHandler = async (req, res) => {
     if (!session) return res.status(401).json({ error: "Unauthorized" });
 
     const authId = session.user.id;
-    const { username, email, password, currentPassword } = req.body;
+    const { username, password, currentPassword } = req.body;
     const avatarFile = req.file;
-
     let profile = await UserProfile.findOne({ authId });
     let authRecord = await AuthUser.findOne({ authId });
     if (!authRecord) {
@@ -62,10 +65,7 @@ export const updateProfile: RequestHandler = async (req, res) => {
       return res.status(404).json({ error: "Auth record not found" });
 
     if (username) profile.username = username;
-    if (email) {
-      profile.email = email;
-      authRecord.email = email;
-    }
+
     if (password && currentPassword)
       authRecord.passwordHash = await bcrypt.hash(password, 10);
     if (avatarFile) profile.avatar = avatarFile.filename;
