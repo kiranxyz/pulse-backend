@@ -1,4 +1,9 @@
-export type UserRole = "participant" | "organizer" | "admin" | "ticketchecker";
+export type UserRole =
+  | "participant"
+  | "organizer"
+  | "admin"
+  | "ticketchecker"
+  | "guest";
 
 export interface UserDTO {
   id: string;
@@ -7,7 +12,7 @@ export interface UserDTO {
   role: UserRole;
 }
 export const normalizeRole = (role?: string): UserRole => {
-  const r = role?.toLowerCase() || "participant";
+  const r = role?.toLowerCase() || "guest";
   switch (r) {
     case "admin":
     case "organizer":
@@ -15,6 +20,6 @@ export const normalizeRole = (role?: string): UserRole => {
     case "participant":
       return r;
     default:
-      return "participant";
+      return "guest";
   }
 };

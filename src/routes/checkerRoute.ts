@@ -1,15 +1,21 @@
-// src/routes/checkinRoute.ts
 import { Router } from "express";
-import { doCheckIn } from "#controllers/checkerController.ts";
+import * as checker from "../controllers/checkerController.ts";
 import { requireAuth } from "#middlewares/requireAuth.ts";
 import { requireRole } from "#middlewares/requireRole.ts";
 
 const router = Router();
-router.post(
-  "/",
+
+router.get(
+  "/:id/analytics",
   requireAuth,
   requireRole(["ticketchecker", "admin"]),
-  doCheckIn
+  checker.analytics
+);
+router.post(
+  "/:id/checkin",
+  requireAuth,
+  requireRole(["ticketchecker", "admin"]),
+  checker.doCheckIn
 );
 
 export default router;

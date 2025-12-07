@@ -5,13 +5,20 @@ export interface UserDoc extends Document {
   email: string;
   password: string;
   role: "participant" | "organizer" | "admin" | "ticketchecker";
+  events: Schema.Types.ObjectId[];
+  active: boolean;
 }
 
 const UserSchema = new Schema<UserDoc>({
   name: String,
   email: { type: String, unique: true },
   password: String,
-  role: { type: String, default: "participant" },
+  role: {
+    type: String,
+    enum: ["admin", "organizer", "ticketchecker", "participant"],
+  },
+  events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
+  active: { type: Boolean, default: true },
 });
 
 export default model<UserDoc>("User", UserSchema);

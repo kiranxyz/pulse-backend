@@ -1,8 +1,8 @@
 import { Router } from "express";
 import fs from "fs";
 import { sendTicketEmail } from "../utils/sendEmail.ts";
-import { UserProfile } from "../models/userProfile.ts";
-import { Event } from "#models/Event.ts";
+import UserProfile from "../models/userProfile.ts";
+import Event from "#models/event.ts";
 
 const router = Router();
 

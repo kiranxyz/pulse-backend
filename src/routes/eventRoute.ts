@@ -11,7 +11,8 @@ import { getLatLogFromAddress } from "#middlewares/getLatLogFromAddress.ts";
 const router = Router();
 
 router.get("/", getEvents);
-router.post("/", getLatLogFromAddress, createEvent);
+//router.post("/", getLatLogFromAddress, createEvent);
+router.post("/", createEvent);
 router.put("/:id", updateEvent);
 router.delete("/:id", deleteEvent);
 

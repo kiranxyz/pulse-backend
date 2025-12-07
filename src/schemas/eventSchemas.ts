@@ -17,7 +17,7 @@ export const eventSchema = z.object({
   image: z.string().optional(),
   price: z.number().optional(),
   name: z.string().min(1, "Event name is required"),
-  organizer: z.string().min(1, "Organizer ID is required"), // should be Mongo ObjectId string
+  organizer: z.string().min(1).optional, // should be Mongo ObjectId string
   capacity: z.number().min(1, "Capacity is required"),
   attendees: z.array(z.string()).optional(), // array of user IDs
   location: z.string().min(1, "Location is required"),

@@ -1,11 +1,10 @@
-import mongoose, { Schema, Document } from "mongoose";
-import { boolean } from "zod";
+import mongoose, { Schema, model, Document } from "mongoose";
 
 export interface IEvent extends Document {
   title: string;
-  address: string;
+  address?: string;
   date: Date;
-  time: string;
+  time?: string;
   totalSeats: number;
   seatsBooked: number;
   discount?: {
@@ -13,54 +12,61 @@ export interface IEvent extends Document {
     percent: number;
   };
   description?: string;
-  name: string;
-  organizer: mongoose.Types.ObjectId;
-  capacity: number;
-  attendees: mongoose.Types.ObjectId[];
-  location: string;
-  ticketsSold: number;
-  ticketAvailable: Number;
-  seatLeft: Number;
   image?: string;
   price?: number;
+  organizer?: mongoose.Types.ObjectId;
+  categories?: string[];
+  ticketsSold: number;
+  checkIns: number;
+  revenue: number;
   latitude?: string;
   longitude?: string;
-  organizerId?: string;
+  options?: {
+    discountFirst10: boolean;
+    showHurryUp: boolean;
+    reminder: boolean;
+    emailNotify: boolean;
+  };
 }
 
 const eventSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     address: String,
-    date: Date,
+    date: { type: Date, required: true },
     time: String,
+
     totalSeats: { type: Number, required: true },
     seatsBooked: { type: Number, default: 0 },
+
     discount: {
       firstN: { type: Number, default: 0 },
       percent: { type: Number, default: 0 },
     },
+
     description: String,
     image: String,
     price: Number,
+
     latitude: String,
     longitude: String,
-    categories: [
-      {
-        type: String,
-        required: true,
-        trim: true,
-      },
-    ],
-    organizerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "AuthUser",
-      required: true,
+
+    organizer: { type: Schema.Types.ObjectId, ref: "User" },
+
+    categories: [{ type: String, trim: true }],
+
+    ticketsSold: { type: Number, default: 0 },
+    checkIns: { type: Number, default: 0 },
+    revenue: { type: Number, default: 0 },
+
+    options: {
+      discountFirst10: { type: Boolean, default: false },
+      showHurryUp: { type: Boolean, default: false },
+      reminder: { type: Boolean, default: false },
+      emailNotify: { type: Boolean, default: false },
     },
   },
   { timestamps: true }
 );
 
-export const Event = mongoose.model("Event", eventSchema);
-// (mongoose.models.Event as mongoose.Model<IEvent>) ||
-// mongoose.model<IEvent>("Event", eventSchema);
+export default model<IEvent>("Event", eventSchema);

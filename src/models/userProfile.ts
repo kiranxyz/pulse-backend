@@ -6,8 +6,10 @@ export interface UserProfileDocument extends Document {
   email: string;
   title?: string;
   address?: string;
-  role: "participant" | "organizer" | "admin" | "ticketchecker";
+  role: "participant" | "organizer" | "admin" | "ticketchecker" | "guest";
   avatar?: string;
+  active: boolean;
+  events: string[];
 }
 
 const UserProfileSchema = new Schema<UserProfileDocument>(
@@ -19,15 +21,13 @@ const UserProfileSchema = new Schema<UserProfileDocument>(
     address: String,
     role: {
       type: String,
-      enum: ["participant", "organizer", "admin", "ticketchecker"],
+      enum: ["participant", "organizer", "admin", "ticketchecker", "guest"],
       default: "participant",
       avatar: { type: String },
     },
+    active: Boolean,
+    events: { type: [String], default: [] },
   },
   { timestamps: true }
 );
-
-export const UserProfile = model<UserProfileDocument>(
-  "UserProfile",
-  UserProfileSchema
-);
+export default model<UserProfileDocument>("UserProfile", UserProfileSchema);

@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import Event from "../../src/models/event.ts";
-import Ticket from "../models/Ticket.ts";
+import { Ticket } from "../models/Ticket.ts";
 
 export const checkIn = async (req: Request, res: Response) => {
   try {

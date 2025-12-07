@@ -1,59 +1,5 @@
-<<<<<<< HEAD
-import mongoose, { Schema, Document, Model } from "mongoose";
-
-export interface ITicket extends Document {
-  eventId: mongoose.Types.ObjectId;
-  userId: mongoose.Types.ObjectId;
-  ticketId: string;
-  checkedIn: boolean;
-  price: number;
-  purchased: boolean;
-}
-
-const ticketSchema = new Schema<ITicket>(
-  {
-    eventId: {
-      type: Schema.Types.ObjectId,
-      ref: "Event",
-      required: true,
-    },
-
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-
-    ticketId: {
-      type: String,
-      unique: true,
-      required: true,
-    },
-
-    checkedIn: {
-      type: Boolean,
-      default: false,
-    },
-
-    price: {
-      type: Number,
-      default: 0,
-    },
-
-    purchased: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  { timestamps: true }
-);
-
-const Ticket: Model<ITicket> = mongoose.model<ITicket>("Ticket", ticketSchema);
-
-export default Ticket;
-=======
 import mongoose from "mongoose";
-
+import { boolean } from "zod";
 const ticketSchema = new mongoose.Schema({
   registration: {
     type: mongoose.Schema.Types.ObjectId,
@@ -80,7 +26,19 @@ const ticketSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  scanned: {
+    type: boolean,
+    default: false,
+  },
+  scannedAt: {
+    type: Date,
+    default: Date.now,
+  },
+  scannedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
 });
 
 export const Ticket = mongoose.model("Ticket", ticketSchema);
->>>>>>> origin/dev
