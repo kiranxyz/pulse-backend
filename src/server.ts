@@ -15,10 +15,15 @@ import path from "path";
 dotenv.config();
 import { connectDB } from "#db/db.ts";
 import profileRoutes from "#routes/profileRoutes.ts";
+import checkInRoutes from "#routes/checkInRoutes.ts";
 import errorHandler from "#middlewares/errorHandler.ts";
 import notFoundHandler from "#middlewares/notFoundHandler.ts";
 import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
+import adminStatsRouter from "#routes/adminStats.ts";
+
 import { auth } from "#auth/auth.ts";
+import organizer from "#routes/organizerRoute.ts";
+import checker from "#routes/checkerRoute.ts";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -63,6 +68,12 @@ app.use("/uploads", express.static(path.join(__dirname, "../src/uploads")));
 
 app.use("/api/profile", profileRoutes);
 app.use("/api/events", eventRouter);
+app.use("/admin", adminStatsRouter);
+app.use("/organizer", organizer);
+app.use("/checker", checker);
+app.get("/", (req, res) => res.json({ ok: true }));
+
+app.use("/api/checkin", checkInRoutes);
 app.use("/api/stripe", stripeRouter);
 app.use("/api/registerParticipant", registerParticipantRoute);
 app.use("/api/ticket", ticketRoute);

@@ -1,6 +1,11 @@
 import axios from "axios";
+import { Request, Response, NextFunction } from "express";
 
-const getLatLogFromAddress = async (req, res, next) => {
+const getLatLogFromAddress = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { address } = req.body;
   console.log("Address received in middleware:", address);
   if (!address) {
