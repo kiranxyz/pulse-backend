@@ -1,11 +1,11 @@
 import { EventRegistration } from "#models/EventRegistration.ts";
 import { Ticket } from "#models/Ticket.ts";
 //import { AuthUser } from "#models/AuthUser.ts";
-import { Event } from "#models/Event.ts";
+import Event from "#models/event.ts";
 import { generateTicketPDF } from "../utils/GeneratePdfTicket.ts";
 import crypto from "crypto";
 import { RequestHandler } from "express";
-import { UserProfile } from "../models/userProfile.ts";
+import UserProfile from "../models/userProfile.ts";
 
 const registerParticipant: RequestHandler = async (req, res) => {
   try {

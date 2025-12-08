@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import { boolean } from "zod";
 const ticketSchema = new mongoose.Schema({
   registration: {
     type: mongoose.Schema.Types.ObjectId,
@@ -25,6 +25,19 @@ const ticketSchema = new mongoose.Schema({
   issuedAt: {
     type: Date,
     default: Date.now,
+  },
+  scanned: {
+    type: boolean,
+    default: false,
+  },
+  scannedAt: {
+    type: Date,
+    default: Date.now,
+  },
+  scannedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
   },
 });
 

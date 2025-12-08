@@ -1,22 +1,59 @@
-import Ticket from "../models/Ticket.ts";
-import User from "../models/User.ts";
+// src/controllers/ticketController.ts
+import { RequestHandler } from "express";
+import { EventRegistration } from "#models/EventRegistration.ts";
+import { Ticket } from "#models/Ticket.ts";
+import Event from "#models/event.ts";
+import UserProfile from "#models/userProfile.ts";
+import { generateTicketPDF } from "../utils/GeneratePdfTicket.ts";
 
-export const getTicketDataById = async (req, res) => {
+export const registerParticipant: RequestHandler = async (req, res) => {
   try {
-    const ticket = await Ticket.findById(req.params.id);
-    if (!ticket) return res.status(404).json({ message: "Ticket not found" });
-    res.json(event);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-};
+    const { eventId, userId } = req.body;
+    if (!eventId || !userId)
+      return res.status(400).json({ error: "eventId and userId required" });
 
-export const getTicketDataByUserId = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    res.json(event);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    const exists = await EventRegistration.findOne({
+      event: eventId,
+      user: userId,
+    });
+    if (exists) return res.status(400).json({ error: "Already registered" });
+
+    const registration = await EventRegistration.create({
+      event: eventId,
+      user: userId,
+    });
+
+    const ticketCode = Math.random().toString(36).slice(2, 9).toUpperCase();
+
+    const ticket = await Ticket.create({
+      registration: registration._id,
+      user: userId,
+      event: eventId,
+      ticketCode,
+    });
+
+    // increment counts
+    await Event.findByIdAndUpdate(eventId, {
+      $inc: { ticketsSold: 1, revenue: 0 },
+    });
+
+    // generate pdf
+    const user = await UserProfile.findOne({ authId: userId });
+    const event = await Event.findById(eventId);
+    try {
+      await generateTicketPDF({
+        ticketCode: ticket.ticketCode,
+        eventTitle: event?.title ?? "Event",
+        userName: user?.username ?? "User",
+        savePath: `src/uploads/ticket_${ticket.ticketCode}.pdf`,
+      });
+    } catch (err) {
+      console.warn("pdf generation failed", err);
+    }
+
+    res.json({ ticket, registration });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Registration failed" });
   }
 };

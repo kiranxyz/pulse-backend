@@ -4,7 +4,7 @@ export interface AuthUserDocument extends Document {
   authId: string;
   email: string;
   passwordHash?: string;
-  role: "participant" | "organizer" | "admin" | "ticketchecker";
+  role: "participant" | "organizer" | "admin" | "ticketchecker" | "guest";
   provider?: string;
   providerId?: string;
   createdAt: Date;
@@ -20,7 +20,7 @@ const AuthUserSchema = new Schema<AuthUserDocument>(
     role: {
       type: String,
       enum: ["participant", "organizer", "admin", "ticketchecker"],
-      default: "participant",
+      default: "guest",
     },
     provider: { type: String },
     providerId: { type: String },
