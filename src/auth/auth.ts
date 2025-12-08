@@ -15,4 +15,13 @@ export const auth = betterAuth({
   database: mongodbAdapter(db, { client }),
   emailAndPassword: { enabled: true },
   trustedOrigins: [process.env.FRONTEND_ORIGIN!],
+  cookies: {
+    session: {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    },
+  },
 });
