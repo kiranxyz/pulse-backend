@@ -31,6 +31,8 @@ app.use("/api/auth/native", toNodeHandler(auth));
 app.use(express.json());
 
 app.get("/api/me", async (req, res) => {
+    console.log("Incoming headers:", req.headers);
+
   try {
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
