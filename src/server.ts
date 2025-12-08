@@ -7,12 +7,8 @@ import eventRouter from "./routes/eventRoute.ts";
 import stripeRouter from "./routes/stripeRouter.ts";
 import registerParticipantRoute from "./routes/registerParticipantRoute.ts";
 import ticketRoute from "./routes/ticketRoute.ts";
-<<<<<<< HEAD
-import mongoose from "mongoose";
-=======
 import categoriesRoute from "./routes/categoriesRoute.ts";
 import notificationRoute from "./routes/notificationRoute.ts";
->>>>>>> 4d5c847ed5a467bd03f4e630afdd48e7d347d76c
 import "#db";
 
 import path from "path";
@@ -46,8 +42,7 @@ app.get("/api/me", async (req, res) => {
       headers: fromNodeHeaders(req.headers),
     });
 
-
-app.listen(PORT, () => console.log("Server running"));
+    app.listen(PORT, () => console.log("Server running"));
     if (!session) {
       return res.status(401).json({ user: null });
     }
@@ -71,11 +66,8 @@ app.use("/api/events", eventRouter);
 app.use("/api/stripe", stripeRouter);
 app.use("/api/registerParticipant", registerParticipantRoute);
 app.use("/api/ticket", ticketRoute);
-<<<<<<< HEAD
-=======
 app.use("/api/categories", categoriesRoute);
 app.use("/api/notifications", notificationRoute);
->>>>>>> 4d5c847ed5a467bd03f4e630afdd48e7d347d76c
 
 app.use("*splat", notFoundHandler);
 app.use(errorHandler);

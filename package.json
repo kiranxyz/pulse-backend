@@ -27,6 +27,7 @@
     "nodemailer": "^7.0.11",
     "pdfkit": "^0.17.2",
     "qrcode": "^1.5.4",
+    "socket.io": "^4.8.1",
     "zod": "^4.1.13"
   },
   "devDependencies": {

@@ -4,6 +4,9 @@ import { Request, Response } from "express";
 export const getNotifications = async (req: Request, res: Response) => {
   try {
     const notifications = await Notification.find().sort({ createdAt: -1 });
+    if (notifications.length === 0) {
+      return res.status(404).json({ message: "No notifications found" });
+    }
     res.status(200).json(notifications);
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error", error });

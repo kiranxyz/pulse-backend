@@ -1,4 +1,4 @@
-import Ticket from "../models/Ticket.ts";
+import { Ticket } from "../models/Ticket.ts";
 import User from "../models/User.ts";
 
 export const getTicketDataById = async (req, res) => {
