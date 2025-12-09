@@ -1,6 +1,6 @@
 import type { RequestHandler } from "express";
 import bcrypt from "bcryptjs";
-import { UserProfile } from "#models/userProfile.ts";
+import UserProfile from "#models/userProfile.ts";
 import { AuthUser } from "#models/authUser.ts";
 import { auth } from "#auth/auth.ts";
 import { fromNodeHeaders } from "better-auth/node";
@@ -8,6 +8,7 @@ import fs from "fs";
 import path from "path";
 import { updateProfileSchema } from "#schemas/userSchemas.ts";
 import { console } from "inspector";
+import { UserRole, normalizeRole } from "../types/user.ts";
 
 export const getProfile: RequestHandler = async (req, res) => {
   try {
@@ -140,13 +141,15 @@ export const syncProfile: RequestHandler = async (req, res) => {
 
     const authId = session.user.id;
 
+    const roleFromBody: UserRole = normalizeRole(req.body?.role);
+
     let authRecord = await AuthUser.findById(authId);
     if (!authRecord) {
       authRecord = await AuthUser.create({
         _id: authId,
         authId,
         email: session.user.email,
-        role: "participant",
+        role: roleFromBody,
       });
     }
 
@@ -156,7 +159,7 @@ export const syncProfile: RequestHandler = async (req, res) => {
         authId,
         username: session.user.name || session.user.email.split("@")[0],
         email: session.user.email,
-        role: "participant",
+        role: roleFromBody,
       });
     }
 
@@ -164,5 +167,34 @@ export const syncProfile: RequestHandler = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const listUsers = async (_req: any, res: any) => {
+  try {
+    const users = await UserProfile.find().select(
+      "_id username email role active events"
+    );
+
+    res.json(users);
+  } catch (err) {
+    console.error("listUsers error:", err);
+    res.status(500).json({ error: "Failed to load users" });
+  }
+};
+
+export const toggleUserActive = async (req: any, res: any) => {
+  try {
+    const id = req.params.id;
+    const user = await UserProfile.findById(id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    user.active = !user.active;
+    await user.save();
+
+    res.json({ success: true, active: user.active });
+  } catch (err) {
+    console.error("toggleUserActive error:", err);
+    res.status(500).json({ error: "Failed to toggle user status" });
   }
 };

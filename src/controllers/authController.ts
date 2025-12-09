@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import { fromNodeHeaders } from "better-auth/node";
 import { auth } from "#auth/auth.ts";
 import { registerSchema, loginSchema } from "#schemas/authSchemas.ts";
-import { UserProfile } from "#models/userProfile.ts";
+import UserProfile from "#models/userProfile.ts";
 import { AuthUser } from "#models/authUser.ts";
 
 export const register: RequestHandler = async (req, res) => {
@@ -25,7 +25,7 @@ export const register: RequestHandler = async (req, res) => {
     const authRecord = await AuthUser.create({
       authId: authUser.user.id,
       email,
-      role: role || "participant",
+      role: role || "guest",
     });
     const profile = await UserProfile.create({
       authId: authUser.user.id,
@@ -33,7 +33,7 @@ export const register: RequestHandler = async (req, res) => {
       email,
       title,
       address,
-      role: role || "participant",
+      role: role || "guest",
     });
 
     const result = await auth.api.signInEmail({
@@ -132,4 +132,34 @@ export const getSession: RequestHandler = async (req, res) => {
     console.error("Get session error:", err);
     return res.status(500).json({ error: "Failed to fetch session" });
   }
+};
+export const stats = async (_req: any, res: any) => {
+  const totalUsers = await UserProfile.countDocuments();
+  const totalEvents = await (
+    await import("../models/event.ts")
+  ).default.countDocuments();
+  const totalTickets = await (
+    await import("../models/Ticket.ts")
+  ).Ticket.countDocuments();
+  const totalCheckins = await (
+    await import("../models/Ticket.ts")
+  ).Ticket.countDocuments({ checkedIn: true });
+
+  res.json({
+    overview: { totalUsers, newUsersThisMonth: 5, activeUsersThisMonth: 50 },
+    events: { totalEvents, upcomingEventsThisMonth: 4, pastEventsThisMonth: 2 },
+    tickets: {
+      ticketsSoldThisMonth: totalTickets,
+      ticketsAvailableThisMonth: totalEvents * 100,
+      checkinsThisMonth: totalCheckins,
+      attendanceRateThisMonth: totalEvents
+        ? Math.round((totalCheckins / (totalEvents * 100)) * 100)
+        : 0,
+    },
+    finance: {
+      revenueTotal: 100000,
+      revenueThisMonth: 8000,
+      highestEarningEvent: { name: "Tech Fusion Summit", revenue: 9600 },
+    },
+  });
 };
