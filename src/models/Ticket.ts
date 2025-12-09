@@ -37,7 +37,7 @@ const ticketSchema = new mongoose.Schema({
   scannedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
+    required: false,
   },
 });
 
