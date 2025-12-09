@@ -132,7 +132,6 @@ export const deleteProfile: RequestHandler = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
-
 export const syncProfile: RequestHandler = async (req, res) => {
   try {
     const session = await auth.api.getSession({

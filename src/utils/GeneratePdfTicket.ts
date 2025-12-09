@@ -49,7 +49,7 @@ export const generateTicketPDF = async (
       doc.image(qrBuffer, {
         width: 150,
         height: 150,
-        align: "left",
+        align: "center",
       });
 
       // Footer
