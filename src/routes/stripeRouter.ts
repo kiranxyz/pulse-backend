@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import dotenv from "dotenv";
 dotenv.config();
 const router = Router();
-const stripe = new Stripe(process.env.PK_TEST_STRIPE_SECRET_KEY as string);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 router.post("/create-payment-intent", async (req, res) => {
   try {
