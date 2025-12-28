@@ -24,7 +24,7 @@ export const registerParticipant: RequestHandler = async (req, res) => {
     });
 
     const ticketCode = Math.random().toString(36).slice(2, 9).toUpperCase();
-
+    console.log("Generated ticket code:", ticketCode);
     const ticket = await Ticket.create({
       registration: registration._id,
       user: userId,

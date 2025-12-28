@@ -7,6 +7,11 @@ const ticketSchema = new mongoose.Schema({
     required: true,
     unique: true, // 1 ticket per registration
   },
+  ticketId: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

@@ -25,11 +25,9 @@ const registerParticipant: RequestHandler = async (req, res) => {
       event: eventId,
       user: userId,
     });
-
     // generate unique ticket code
     //const ticketCode = crypto.randomUUID();
     const ticketCode = Math.floor(10000 + Math.random() * 90000).toString();
-
     const user = await UserProfile.findOne({ authId: userId });
     const event = await Event.findById(eventId);
 
@@ -39,6 +37,7 @@ const registerParticipant: RequestHandler = async (req, res) => {
       user: userId,
       event: eventId,
       ticketCode,
+      ticketId: ticketCode,
     });
 
     if (user !== null && event !== null) {
